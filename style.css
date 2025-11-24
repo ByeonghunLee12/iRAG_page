@@ -126,7 +126,7 @@ p {
 }
 
 .author-col {
-  margin: 0 15px;
+  margin: 0 10px;
   text-align: center;
 }
 
@@ -1006,7 +1006,7 @@ pre {
 /* === Method 섹션용: 1:1 equal columns === */
 .two-col.method-equal .col-left,
 .two-col.method-equal .col-right {
-  flex: 1 1 0;
+  flex: 1.5 1 0;
 }
 
 /* Ensure nested image container fits column */
@@ -1147,4 +1147,36 @@ pre {
 
 #teaser {
   margin-bottom: 3rem;   /* 숫자 키우면 더 많이 띔 */
+}
+
+.base-row.author-row {
+  display: grid !important;
+  grid-template-columns: repeat(3, max-content);  /* 항상 3열 */
+  justify-content: center;
+  column-gap: 40px;   /* 가로 간격 */
+  row-gap: 4px;       /* 위아래 간격 */
+  margin-bottom: 1rem;
+}
+
+.base-row.author-row .author-col {
+  margin: 0;
+  text-align: center;
+}
+
+.affiliations {
+  text-align: center;
+  font-size: 0.95rem;
+}
+
+/* 각 줄 (윗줄, 아랫줄) */
+.affil-line {
+  display: flex;
+  justify-content: center;   /* 가운데 정렬 */
+  gap: 100px;                 /* 두 항목 사이 간격 (원하면 숫자 조절) */
+  margin-bottom: 2px;        /* 윗줄-아랫줄 사이 간격 */
+}
+
+/* 한 항목(블록)이 줄바꿈 안 되도록 */
+.affil-item {
+  white-space: nowrap;
 }
