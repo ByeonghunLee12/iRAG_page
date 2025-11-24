@@ -1,0 +1,480 @@
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>Dual Recursive Feedback on Generation and Appearance Latents for Pose-Robust Text-to-Image Diffusion</title>
+
+    <!-- Favicon references -->
+
+    <meta
+        content="Dual Recursive Feedback on Generation and Appearance Latents for Pose-Robust Text-to-Image Diffusion"
+        name="description" />
+    <meta
+        content="Dual Recursive Feedback on Generation and Appearance Latents for Pose-Robust Text-to-Image Diffusion"
+        property="og:title" />
+    <meta
+        content="Dual Recursive Feedback on Generation and Appearance Latents for Pose-Robust Text-to-Image Diffusion"
+        property="og:description" />
+    <meta
+        content="Dual Recursive Feedback on Generation and Appearance Latents for Pose-Robust Text-to-Image Diffusion"
+        property="twitter:title" />
+    <meta
+        content="Dual Recursive Feedback on Generation and Appearance Latents for Pose-Robust Text-to-Image Diffusion"
+        property="twitter:description" />
+    <meta property="og:type" content="website" />
+    <meta content="summary_large_image" name="twitter:card" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css"
+        crossorigin="anonymous">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&family=Varela+Round&display=swap"
+        rel="stylesheet">
+    <link href="style.css" rel="stylesheet" type="text/css" />
+
+    <!-- 🔎 Added minimal CSS for click‑to‑zoom lightbox -->
+    <style>
+      /* make images clearly zoomable */
+      img.zoomable { cursor: zoom-in; transition: transform .2s ease; }
+
+      /* fullscreen overlay */
+      .lightbox-overlay {
+        position: fixed; inset: 0; display: none; align-items: center; justify-content: center;
+        background: rgba(0,0,0,.9); z-index: 10000;
+      }
+      .lightbox-overlay.active { display: flex; }
+      .lightbox-overlay img { max-width: 95vw; max-height: 95vh; box-shadow: 0 10px 40px rgba(0,0,0,.6); border-radius: 8px; }
+      /* show zoom-out cursor while overlay is open */
+      .lightbox-overlay, .lightbox-overlay * { cursor: zoom-out; }
+
+      /* prevent background scroll when overlay is open */
+      body.no-scroll { overflow: hidden; }
+    </style>
+
+    <!-- MathJax for LaTeX rendering -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$','$$'], ['\\[','\\]']]
+            },
+            options: {
+                skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+            },
+            svg: { fontCache: 'global' }
+        };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" async></script>
+</head>
+
+<body>
+    <!-- <header class="site-header">
+        <div class="container">
+            <nav class="main-nav">
+                <ul class="nav-links">
+                    <li><a href="index.html#overview">Overview</a></li>
+                    <li><a href="index.html#motivation">Motivation</a></li>
+                    <li><a href="index.html#experimental-results">Experiment</a></li>
+                    <li><a href="index.html#conclusion">Conclusion</a></li>
+                    <li><a href="index.html#citation">Citation</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header> -->
+
+    <div class="hero-section">
+        <div class="container">
+            <div class="title-row">
+                <div class="title-flex">
+                    <div class="title-text-block">
+                        <!-- <h1 class="title"><span class="gradient-text"></span>Dual Recursive Feedback on Generation and Appearance Latents <span class="title-break"></span>  for Pose-Robust Text-to-Image Diffusion</h1> -->
+                         <h1 class="title">
+                            Dual Recursive Feedback on Generation and Appearance Latents<br>
+                            for Pose-Robust Text-to-Image Diffusion
+                        </h1>
+                        <h1 class="subtitle"><span class="plum-text">ICCV 2025</span></h1>
+                    </div>
+                </div>
+            </div>
+            <div class="base-row author-row">
+                <div class="base-col author-col">
+                    <a href= "https://scholar.google.com/citations?user=LvFTDwwAAAAJ&hl" target ="_blank" class="author-text">
+                        Jiwon Kim<sup>1</sup>
+                    </a>
+                </div>
+                <div class="base-col author-col">
+                    <span class="author-text">Pureum Kim<sup>1</sup></span>
+                </div>
+                <div class="base-col author-col">
+                    <a href="https://scholar.google.com/citations?user=RE9ZWDwAAAAJ&hl" target="_blank" class="author-text">
+                        SeonHwa Kim<sup>1</sup>
+                    </a>
+                </div>
+                <div class="base-col author-col">
+                    <span class="author-text">Soobin Park<sup>2</sup></span>
+                </div>
+                <div class="base-col author-col">
+                    <a href="https://scholar.google.com/citations?user=mqNGNqEAAAAJ&hl" target="_blank" class="author-text">
+                        Eunju Cha<sup>2,†</sup>
+                    </a>
+                </div>
+                <div class="base-col author-col">
+                    <a href="https://scholar.google.com/citations?user=aLYNnyoAAAAJ&hl" target="_blank" class="author-text">
+                        Kyong Hwan Jin<sup>1,†</sup>
+                    </a>
+                </div>
+            </div>
+
+            <div class="base-row author-row">
+                <div class="base-col author-col affiliations">
+                    <!-- <sup>1</sup>KAIST AI &nbsp;&nbsp; <sup>2</sup>Korea Aerospace University &nbsp;&nbsp; -->
+                    <sup>1</sup>Korea University &nbsp;&nbsp; <sup>2</sup>Sookmyung Women's University &nbsp;&nbsp;
+                    <br>
+                    <sup>†</sup>corresponding authors
+                </div>
+            </div>
+            <div class="link-labels base-row">
+                <div class="base-col icon-col"><a href="https://www.arxiv.org/abs/2508.09575" target="_blank"
+                        class="link-block">
+                        <img src="./asset/arXiv.png" alt="Hugging Face Logo" style="height: 5.0em; vertical-align: middle;">
+                        <strong class="link-labels-text">Paper</strong>
+                    </a></div>
+                
+                <div class="base-col icon-col"><a href='https://huggingface.co/' class="link-block">
+                         <span class="icon">
+                       <img src="./asset/hf-logo.png" alt="Hugging Face Logo" style="height: 5.0em; vertical-align: middle;">
+                  </span>
+                        <strong class="link-labels-text">Hugging Face</strong>
+                    </a></div>
+                <div class="base-col icon-col"><a href='https://github.com/jwonkm/DRF' class="link-block">
+                         <span class="icon">
+                       <img src="./asset/github-mark.svg" alt="Github Logo" style="height: 5.0em; vertical-align: middle;">
+                  </span>
+                        <strong class="link-labels-text">Code</strong>
+                    </a></div>
+                <div class="base-col icon-col"><a href="index.html#citation" class="link-block">
+                        <img src="./asset/Scholar.png" alt="Hugging Face Logo" style="height: 5.0em; vertical-align: middle;">
+                        <strong class="link-labels-text">Citation</strong>
+                    </a></div>
+            </div>
+
+        </div>
+    </div>
+
+    <main class="main-content">
+
+        <div class="container">
+                <img id="teaser" src="./asset/main_qual2.png" alt="A descriptive text for the image"style="width:100%; max-width:980px; max-height:420px; height:auto; object-fit:contain; display:block; margin:0 auto;">
+
+            <div id="abstract" class="base-row section">
+                <h2>Abstract</h2>
+                <p class="paragraph">
+                    Recent advancements in controllable text-to-image (T2I) diffusion models, such as Ctrl-X and FreeControl, have demonstrated robust spatial and appearance control without requiring auxiliary module training. However, these models often struggle to accurately preserve spatial structures and fail to capture fine-grained conditions related to object poses and scene layouts. To address these challenges, we propose a training-free <strong>Dual Recursive Feedback (DRF)</strong> system that properly reflects control conditions in controllable T2I models. 
+                    The proposed DRF consists of appearance feedback and generation feedback that recursively refines the intermediate latents to better reflect the given appearance information and the user's intent.
+                    This dual-update mechanism guides latent representations toward reliable manifolds, effectively integrating structural and appearance attributes. Our approach enables fine-grained generation even between class-invariant structure-appearance fusion, such as transferring human motion onto a tiger's form. Extensive experiments demonstrate the efficacy of our method in producing high-quality, semantically coherent, and structurally consistent image generations.
+                </p>
+            </div>
+            <h3>
+                Conceptual Visualization of Dual Recursive Feedback
+            </h3>
+
+            <div class="video-container">
+            <video
+              class="main-video"
+              src="./asset/DRF_concept_video.mp4"
+              autoplay
+              loop
+              muted
+              playsinline
+              controls
+              style="width:100%; max-width:980px; max-height:420px; height:auto; object-fit:contain; display:block; margin:0 auto;">
+              Your browser does not support the video tag.
+            </video>
+            </div>
+            
+            <p class="paragraph"> Illustration of a diffusion-based generative model with latent feedback mechanisms (DRF) for controlling both appearance and generation latent in <strong>class-invariant text-to-image synthesis</strong>. The proposed method refines latent updates to achieve fine-grained control, improving results with desired structural and appearance attributes.
+            </p>
+
+            <section id="method" class="section">
+              <h2>Method</h2>
+            
+              <!-- 1) 위쪽: Appearance / Generation feedback (1:1) -->
+              <div class="two-col method-equal">
+                <div class="col-left">
+                  <h3>Appearance feedback</h3>
+                  <p class="paragraph">
+                    Appearance feedback refines the appearance latent \(z_t^a\) so that
+                    the denoised estimate \(z_{0|t}^a\) converges toward a stable
+                    appearance code \(z_0^a\) extracted from the reference image.
+                    We modify the stochastic update of \(z_t^a\) and minimize a
+                    reconstruction loss between \(z_{0|t}^a\) and \(z_0^a\).
+                    This fixed-point style update suppresses appearance leakage and
+                    preserves identity even under class-invariant structure–appearance fusion.
+                  </p>
+                </div>
+            
+                <div class="col-right">
+                  <h3>Generation feedback</h3>
+                  <p class="paragraph">
+                    Generation feedback operates on the fused generation latent \(z_t^g\).
+                    At each recursive step, we treat the previous output \(z_{\mathrm{prev}}^g\)
+                    as another fixed point and enforce the current posterior \(z_{0|t}^g\)
+                    to stay close to it via an output-space loss. An iteration-dependent
+                    weight \(w_{\text{iter}}^{(i)}\) gradually shifts the emphasis from
+                    appearance feedback (early steps) to generation feedback (later steps),
+                    so DRF first locks in the reference identity and then improves
+                    alignment with the target structure and text prompt.
+                  </p>
+                </div>
+              </div>
+            
+              <!-- 2) 가운데: 파이프라인 그림 전체 폭 -->
+              <div class="image-container" style="margin-top: 2rem;">
+                <div class="image-content">
+                  <img
+                    src="./asset/pipeline.png"
+                    alt="DRF pipeline"
+                    class="img"
+                    style="width:100%; max-width:980px; max-height:420px; height:auto; object-fit:contain; margin:0 auto;"
+                  >
+                </div>
+                <p class="image-caption">
+                  DRF iteratively updates by obtaining guided noises \(\epsilon_{\theta}^a\)
+                  and \(\epsilon_{\theta}^g\) through appearance and generation feedback.<br>
+                  The distillation function derived from these two noises is combined to
+                  update the generation latent.
+                </p>
+              </div>
+            
+              <!-- 3) 아래쪽: Dual Recursive Feedback 설명 / Algorithm (1:1) -->
+              <div class="two-col method-equal" style="margin-top: 2.5rem;">
+                <div class="col-left">
+                  <h3>Dual Recursive Feedback</h3>
+                  <p class="paragraph">
+                    Dual Recursive Feedback (DRF) couples the two feedback loops into a
+                    single training-free guidance rule. At each sampling step, we run the
+                    controllable T2I backbone with appearance and generation prompts to
+                    obtain guided noises \(\epsilon_{\theta}^a\) and \(\epsilon_{\theta}^g\),
+                    from which we form denoised latents \(z_{0|t}^a\) and \(z_{0|t}^g\).
+                    DRF defines an appearance reconstruction loss that pulls
+                    \(z_{0|t}^a\) toward the reference code \(z_0^a\), and a
+                    generation-consistency loss that keeps \(z_{0|t}^g\) close to the
+                    previous output \(z_{\mathrm{prev}}^g\), weighted by
+                    \(w_{\text{iter}}^{(i)}\). The gradient of this combined DRF loss is
+                    used to refine the shared noise update for \(z_t^g\), so that samples
+                    are recursively attracted to an identity-preserving, pose-consistent
+                    fixed point while remaining fully plug-and-play with the underlying
+                    diffusion sampler.
+                  </p>
+                </div>
+            
+                <div class="col-right img">
+                  <img
+                    src="./asset/algorithm.png"
+                    alt="Algorithm 1. Dual Recursive Feedback"
+                    style="width:100%; max-width:980px; max-height:420px;
+                           height:auto; object-fit:contain; display:block; margin:0 auto;"
+                  >
+                  <p class="image-caption">
+                    <strong>Dual Recursive Feedback.</strong> Appearance feedback pulls the
+                    appearance latent toward an identity-preserving fixed point,<br>
+                    while generation feedback recursively aligns the fused latent with the
+                    desired structure and text condition.
+                  </p>
+                </div>
+              </div>
+            </section>
+
+            
+
+            <section id="conclusion" class="section">
+                <h2>Conclusion</h2>
+
+                <p class="paragraph">
+                    DRF is a training-free T2I diffusion framework that provides recursive feedback to each control component for effective control of appearance and structure. This feedback mechanism ensures that the final generation output aligns coherently with both the appearance image and the text-conditioned score, resulting in high-quality generated images. By employing a dual feedback strategy, DRF resolves the longstanding issues in prior T2I methods, the loss of appearance fidelity, and the inability to produce stable image generations across diverse datasets.
+                    Moreover, DRF exhibits robust performance in preserving structure and reflecting the intended appearance, as demonstrated in tasks such as pose transfer and image synthesis on class-invariant datasets. We further show that our approach can be seamlessly integrated into other T2I diffusion models, thereby offering a foundation for broader advancements in diffusion model sampling.
+                </p>
+            </section>
+
+            <div class="citation add-top-padding">
+                <h1 id="citation">Citation</h1>
+                <p> If you use this work or find it helpful, please consider citing: </p>
+                <pre id="codecell0">
+@InProceedings{Kim_2025_ICCV,
+    author    = {Kim, Jiwon and Kim, Pureum and Kim, SeonHwa and Park, Soobin and Cha, Eunju and Jin, Kyong Hwan},
+    title     = {Dual Recursive Feedback on Generation and Appearance Latents for Pose-Robust Text-to-Image Diffusion},
+    booktitle = {Proceedings of the IEEE/CVF International Conference on Computer Vision (ICCV)},
+    month     = {October},
+    year      = {2025},
+    pages     = {15491-15500}
+}
+                </pre>
+            </div>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <p class="credit">Credit: The design of this project page is inspired by previous academic project pages, such as <a href="https://llm-grounded-diffusion.github.io/" target="_blank">LLM-grounded Diffusion</a>, <a href="https://describe-anything.github.io/" target="_blank">Describe-anything</a>, <a href="https://cvlab-kaist.github.io/VIRAL/" target="_blank">VIRAL</a>, and <a href="https://cvlab-kaist.github.io/SpikeMatch/" target="_blank">SpikeMatch</a>.</p>
+        </div>
+    </footer>
+
+
+    <script>
+    function toggleMute(element) {
+        const video = element.parentElement.querySelector('video');
+        const icon = element.querySelector('i');
+        const text = element.querySelector('.unmute-text');
+        
+        if (video.muted) {
+            video.muted = false;
+            icon.className = 'fa fa-volume-up';
+            text.textContent = 'Mute';
+        } else {
+            video.muted = true;
+            icon.className = 'fa fa-volume-off';
+            text.textContent = 'Click to unmute';
+        }
+    }
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        const videos = document.querySelectorAll('video');
+        videos.forEach(video => {
+            video.addEventListener('play', function() {
+                const overlay = this.parentElement.querySelector('.unmute-overlay');
+                if (overlay) overlay.style.opacity = '0.8';
+            });
+            
+            video.addEventListener('pause', function() {
+                const overlay = this.parentElement.querySelector('.unmute-overlay');
+                if (overlay) overlay.style.opacity = '0.8';
+            });
+        });
+
+        // Initialize all slideshows
+        document.querySelectorAll('.slideshow-container').forEach(container => {
+            const slideshow = container.querySelector('.slideshow');
+            const slides = slideshow.querySelectorAll('.slide');
+            const prevButton = container.querySelector('.slideshow-nav.prev');
+            const nextButton = container.querySelector('.slideshow-nav.next');
+            const playPauseButton = container.querySelector('.play-pause');
+            
+            let currentSlide = 0;
+            let autoplayInterval;
+            let isPlaying = true;
+
+            function showSlide(n) {
+                slides.forEach(slide => slide.classList.remove('active'));
+                currentSlide = (n + slides.length) % slides.length;
+                slides[currentSlide].classList.add('active');
+            }
+
+            function changeSlide(n) {
+                showSlide(currentSlide + n);
+                resetAutoplay();
+            }
+
+            function togglePlayPause() {
+                if (isPlaying) {
+                    clearInterval(autoplayInterval);
+                    playPauseButton.innerHTML = '<i class="fa fa-play"></i>';
+                } else {
+                    startAutoplay();
+                    playPauseButton.innerHTML = '<i class="fa fa-pause"></i>';
+                }
+                isPlaying = !isPlaying;
+            }
+
+            function startAutoplay() {
+                autoplayInterval = setInterval(() => {
+                    showSlide(currentSlide + 1);
+                }, 5000);
+            }
+
+            function resetAutoplay() {
+                clearInterval(autoplayInterval);
+                if (isPlaying) {
+                    startAutoplay();
+                }
+            }
+
+            // Initialize this slideshow
+            showSlide(0);
+            startAutoplay();
+
+            // Add event listeners
+            prevButton.addEventListener('click', () => changeSlide(-1));
+            nextButton.addEventListener('click', () => changeSlide(1));
+            playPauseButton.addEventListener('click', togglePlayPause);
+        });
+
+        // Handle main video play button
+        const mainVideo = document.querySelector('.main-video');
+        const playButton = document.querySelector('.play-button-overlay');
+        
+        if (mainVideo && playButton) {
+            // Click play button to play video
+            playButton.addEventListener('click', () => {
+                mainVideo.play();
+                mainVideo.classList.add('playing');
+            });
+
+            // Handle video play/pause events
+            mainVideo.addEventListener('play', () => {
+                mainVideo.classList.add('playing');
+            });
+
+            mainVideo.addEventListener('pause', () => {
+                mainVideo.classList.remove('playing');
+            });
+
+            mainVideo.addEventListener('ended', () => {
+                mainVideo.classList.remove('playing');
+            });
+        }
+
+        // -----------------------------
+        // 🖼️ Click-to-zoom Lightbox
+        // -----------------------------
+        // Build overlay once
+        const lightbox = document.createElement('div');
+        lightbox.className = 'lightbox-overlay';
+        lightbox.setAttribute('role', 'dialog');
+        lightbox.setAttribute('aria-modal', 'true');
+        lightbox.innerHTML = '<img alt="Expanded image">';
+        document.body.appendChild(lightbox);
+        const lightboxImg = lightbox.querySelector('img');
+
+        function openLightbox(src, alt) {
+            lightboxImg.src = src;
+            lightboxImg.alt = alt || '';
+            lightbox.classList.add('active');
+            document.body.classList.add('no-scroll');
+        }
+        function closeLightbox() {
+            lightbox.classList.remove('active');
+            document.body.classList.remove('no-scroll');
+            lightboxImg.src = '';
+        }
+
+        // Close on click anywhere or on Esc
+        lightbox.addEventListener('click', closeLightbox);
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && lightbox.classList.contains('active')) closeLightbox();
+        });
+
+        // Mark target images as zoomable and wire up click
+        const zoomableImages = document.querySelectorAll('.image-container img, .slideshow img, .main-content img.img, .hero-section img.img');
+        zoomableImages.forEach(img => {
+            img.classList.add('zoomable');
+            img.addEventListener('click', () => {
+                // support optional high-res source via data-fullsrc
+                const src = img.getAttribute('data-fullsrc') || img.currentSrc || img.src;
+                openLightbox(src, img.alt);
+            });
+        });
+    });
+    </script>
+</body>
+</html> 
